@@ -1,23 +1,25 @@
 import socket
 import threading
+from encryption_handler import EncryptionHandler
 from cryptography.fernet import Fernet
 
 # Generate a key for encryption (this key should be securely stored/shared between server and clients)
-key = Fernet.generate_key()
-cipher = Fernet(key)
+
 
 # Server configurations
 HOST = '127.0.0.1'
 PORT = 12345
 
 # List of all connected clients
-clients = []
+clients = {}
 
 # Handle client communication
 def handle_client(client_socket, client_address):
     print(f"New connection from {client_address}")
+
+    handler = EncryptionHandler()
     # Send the encryption key to the client (shared secret for this session)
-    client_socket.send(key)
+    client_socket.send(handler.key)
 
     while True:
         try:
@@ -27,7 +29,7 @@ def handle_client(client_socket, client_address):
                 break
 
             # Decrypt the message
-            message = cipher.decrypt(encrypted_msg).decode('utf-8')
+            message = handler.decrypt(encrypted_msg)
             print(f"Received (Decrypted): {message}")
 
             # Broadcast the message to all clients

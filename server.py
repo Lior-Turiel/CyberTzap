@@ -1,71 +1,56 @@
 import socket
 import threading
-from encryption_handler import EncryptionHandler
 from cryptography.fernet import Fernet
+import hashlib
+import base64
 
-# Generate a key for encryption (this key should be securely stored/shared between server and clients)
+
+def send_key(key, client_socket, username):
+    temp = Fernet(username)
+    hash_key = str(hashlib.sha256(key))
+    encrypted_key = temp.encrypt(hash_key.encode())
+    client_socket.send(encrypted_key)
 
 
-# Server configurations
-HOST = '127.0.0.1'
-PORT = 12345
+def string_to_url_safe_base64(input_string):
+    # Step 1: Hash the string (e.g., SHA-256 will produce 32 bytes)
+    hash_bytes = hashlib.sha256(input_string.encode('utf-8')).digest()
 
-# List of all connected clients
-clients = {}
+    # Step 2: Encode the hash bytes to URL-safe base64
+    base64_bytes = base64.urlsafe_b64encode(hash_bytes)
 
-# Handle client communication
-def handle_client(client_socket, client_address):
-    print(f"New connection from {client_address}")
+    # Step 3: Strip any trailing '=' padding and return the result
+    return base64_bytes.rstrip(b'=').decode('utf-8')
 
-    handler = EncryptionHandler()
-    # Send the encryption key to the client (shared secret for this session)
-    client_socket.send(handler.key)
 
-    while True:
-        try:
-            # Receive the encrypted message from the client
-            encrypted_msg = client_socket.recv(1024)
-            if not encrypted_msg:
-                break
+class Server:
+    def __init__(self):
+        self.HOST = "127.0.0.1"
+        self.PORT = 12345
+        self.clients = {}
 
-            # Decrypt the message
-            message = handler.decrypt(encrypted_msg)
-            print(f"Received (Decrypted): {message}")
+        self.listen()
+        self.connect()
 
-            # Broadcast the message to all clients
-            broadcast(message, client_socket)
-        except:
-            # Remove client on disconnect or error
-            remove_client(client_socket)
-            break
+    def listen(self):
+        self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server_socket.bind((self.HOST, self.PORT))
+        self.server_socket.listen(5)
 
-# Broadcast messages to all clients
-def broadcast(message, sending_client):
-    for client in clients:
-        if client != sending_client:
-            encrypted_msg = cipher.encrypt(message.encode('utf-8'))
-            try:
-                client.send(encrypted_msg)
-            except:
-                remove_client(client)
+    def connect(self):
+        while True:
+            client_socket, client_address = self.server_socket.accept()
+            username = client_socket.recv(1024).decode()
+            print(username)
+            self.clients[username] = client_socket
+            thread = threading.Thread(target=self.handle_client, args=(client_socket, username,))
+            thread.start()
 
-# Remove a client from the list
-def remove_client(client_socket):
-    if client_socket in clients:
-        clients.remove(client_socket)
+    def handle_client(self, client_socket, username):
+        key = Fernet.generate_key()
+        send_key(key, client_socket, username)
+        print(key)
 
-# Main function to run the server
-def start_server():
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_socket.bind((HOST, PORT))
-    server_socket.listen(5)
-    print(f"Server started on {HOST}:{PORT}")
 
-    while True:
-        client_socket, client_address = server_socket.accept()
-        clients.append(client_socket)
-        thread = threading.Thread(target=handle_client, args=(client_socket, client_address))
-        thread.start()
 
-if __name__ == "__main__":
-    start_server()
+Server()

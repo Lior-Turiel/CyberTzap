@@ -14,12 +14,14 @@ client_socket.connect((HOST, PORT))
 key = client_socket.recv(1024)
 cipher = Fernet(key)
 
+
 # Function to send encrypted messages to the server
 def send_message():
     while True:
         message = input("You: ")
         encrypted_msg = cipher.encrypt(message.encode('utf-8'))
         client_socket.send(encrypted_msg)
+
 
 # Function to receive encrypted messages from the server
 def receive_message():
@@ -28,6 +30,7 @@ def receive_message():
         if encrypted_msg:
             decrypted_msg = cipher.decrypt(encrypted_msg).decode('utf-8')
             print(f"Server: {decrypted_msg}")
+
 
 # Start message sending and receiving in separate threads
 def start_client():
@@ -38,6 +41,7 @@ def start_client():
     # Start a thread for receiving messages
     receive_thread = threading.Thread(target=receive_message)
     receive_thread.start()
+
 
 if __name__ == "__main__":
     start_client()

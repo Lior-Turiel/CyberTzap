@@ -1,11 +1,12 @@
 import socket
 import threading
 from encryption_handler import EncryptionHandler
+from client2 import Client
 
 
 class Server:
     def __init__(self):
-        self.HOST = socket.gethostname()
+        self.HOST = "127.0.0.1"
         self.PORT = 12345
         self.clients = {}
 
@@ -20,7 +21,7 @@ class Server:
     def connect(self):
         while True:
             client_socket, client_address = self.server_socket.accept()
-            client = Client() # make new client
+            client = Client()
             self.clients[client.id] = client
             thread = threading.Thread(target=self.handle_client, args=(client_socket, client))
             thread.start()
@@ -50,3 +51,6 @@ class Server:
     def remove_client(self, client):
         if client in self.clients:
             self.clients.pop(client.id)
+
+
+Server()

@@ -1,8 +1,10 @@
+import socket
 import threading
 from user import User
 from message import Message
 import utilities
 from cryptography.fernet import Fernet
+import json
 
 
 class Client:
@@ -62,3 +64,28 @@ class Client:
         self.is_active = False
         self.server_socket.close()
         print(f"{self.user.username} disconnected from the server.")
+
+
+def send_messages(client: Client):
+    while client.is_active:
+        text = input("Send: ")
+        client.send_message("text", 2)
+
+
+def client_main():
+    user = User('yoav', '123')
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client = Client(user, server_socket)
+    client.connect_to_server()
+
+    data = client.user.create_data_dict()
+
+    json_object = json.dumps(data, indent=4)
+
+    client.server_socket.send(json_object.encode('utf-8'))
+
+    send_messages(client)
+
+
+if __name__ == '__main__':
+    client_main()

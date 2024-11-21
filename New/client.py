@@ -33,7 +33,7 @@ class Client:
             chat = self.user.chats[other_user_id]
             encrypted_text = chat.cipher.encrypt(text.encode())
             self.server_socket.sendall(f"{other_user_id}:{encrypted_text}".encode('utf-8'))
-            print(f"Encrypted message sent from {self.user.username} to {addressee.username}")
+            print(f"Encrypted message sent from {self.user.username} to {addressee['username']}")
 
     def receive_message(self):
         """Receives an encrypted message from the server, decrypts, and adds it to chat."""

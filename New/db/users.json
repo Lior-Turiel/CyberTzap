@@ -1,5 +1,6 @@
-[
-    {
+{
+    "yoav":
+            {
         "username": "yoav",
         "password": "a03ab19b866fc585b5cb1812a2f63ca861e7e7643ee5d43fd7106b623725fd67",
         "id": 1,
@@ -9,40 +10,16 @@
                     {
                         "sender_id": 1,
                         "recipient_id": 2,
-                        "text": "gAAAAABhQ...",
-                        "timestamp": "2024-11-14T08:34:01"
+                        "text": "gAAAAABhQ..."
                     },
                     {
                         "sender_id": 2,
                         "recipient_id": 1,
-                        "text": "gAAAAABhQ...",
-                        "timestamp": "2024-11-14T08:35:10"
-                    }
-                ]
-            }
-        }
-    },
-    {
-        "username": "user2",
-        "password": "hashed_password2",
-        "id": 2,
-        "chats": {
-            "1": {
-                "messages": [
-                    {
-                        "sender_id": 2,
-                        "recipient_id": 1,
-                        "text": "gAAAAABhQ...",
-                        "timestamp": "2024-11-14T08:35:10"
-                    },
-                    {
-                        "sender_id": 1,
-                        "recipient_id": 2,
-                        "text": "gAAAAABhQ...",
-                        "timestamp": "2024-11-14T08:36:05"
+                        "text": "gAAAAABhQ..."
                     }
                 ]
             }
         }
     }
-]
+
+}

@@ -9,7 +9,7 @@ class Chat:
 
     def add_message(self, message: Message):
         """Encrypts the message text and stores it in the chat."""
-        encrypted_text = self.cipher.encrypt(message.text.encode())
+        encrypted_text = self.cipher.encrypt(message.text)
         message.text = encrypted_text  # Store the encrypted text in the Message object
         self.messages.append(message)
 

@@ -15,6 +15,10 @@ class User:
         self.id = user_counter
         self.chats = {}  # {other_user_id: Chat instance}
 
+
+    def register_or_login_user(self):
+        #TODO: actual thing then put it in the init
+
     def create_data_dict(self):
         """Generate a dictionary representation of the user for saving/loading."""
         return {
@@ -27,7 +31,7 @@ class User:
     @staticmethod
     def get_user_by_id(users, user_id):
         """Retrieve a user by ID from a list of users."""
-        return next((user for user in users if user.id == user_id), None)
+        return next((user for user in users if user["id"] == user_id), None)
 
     def start_chat(self, other_user_id):
         """Initiates a new chat with another user, if one doesn’t already exist."""
@@ -51,7 +55,7 @@ class User:
             encrypted_text = chat.cipher.encrypt(text.encode())
             message = Message(encrypted_text, self, addressee)
             chat.add_message(message)
-            print(f"Encrypted message sent to {addressee.username}")
+            print(f"Encrypted message sent to {addressee['username']}")
             # TODO: Send the message via server
 
     def receive_message(self, encrypted_text, sender_id):

@@ -4,6 +4,14 @@ from chat import Chat
 import utilities
 
 
+def get_latest_id():
+    data = utilities.load_data('db/users.json')
+    last_key = list(data)[-1]
+    last_value = data[last_key]
+    id1 = last_value['id']
+    return id1
+
+
 class User:
     def __init__(self, username, password):
         self.username = username
@@ -12,20 +20,12 @@ class User:
         self.chats = {}  # {other_user_id: Chat instance}
         self.auth = self.register_or_login_user()
 
-    def get_latest_id(self):
-        data = utilities.load_data('db/users.json')
-        last_key = list(data)[-1]
-        last_value = data[last_key]
-        id = last_value['id']
-        return id
-
     def register_or_login_user(self):
-        #TODO: actual thing then put it in the init
         data = utilities.load_data('db/users.json')
         if self.username not in data:
             data[self.username] = self.create_data_dict()
             utilities.save_data('db/users.json', data)
-            self.id = self.get_latest_id() + 1
+            self.id = get_latest_id() + 1
             return True
         else:
             self.id = data[self.username]['id']
@@ -44,7 +44,7 @@ class User:
     def get_user_by_id(users, user_id):
         """Retrieve a user by ID from a list of users."""
         users_keys = list(users)
-        for key in users:
+        for key in users_keys:
             user = users[key]
             if user['id'] == user_id:
                 return user

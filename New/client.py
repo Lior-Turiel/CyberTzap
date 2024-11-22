@@ -35,7 +35,7 @@ class Client:
             self.server_socket.sendall(f"{self.user.id}:{other_user_id}:{encrypted_text}".encode('utf-8'))
             print(f"Encrypted message sent from {self.user.username} to {addressee['username']}")
 
-    def receive_message(self):
+    def receive_message(self, other_id):
         """Receives an encrypted message from the server, decrypts, and adds it to chat."""
         while self.is_active:
             try:
@@ -47,16 +47,24 @@ class Client:
 
                     if chat:
                         decrypted_text = chat.decrypt_message(encrypted_text.encode())
+                        print(decrypted_text)
                         self.user.receive_message(decrypted_text, sender_id)
                     else:
-                        print("Chat not found for the sender.")
+                        self.user.start_chat(other_id)
             except Exception as e:
                 print(f"Error receiving message: {e}")
                 break
 
-    def start_receiving_thread(self):
+    def create_new_chat(self, other_id):
+        db = utilities.load_data('db/users.json')
+        user = db[self.user.username]
+        chats = user['chats']
+        chats[other_id] = []
+        utilities.save_data('db/users.json', db)
+
+    def start_receiving_thread(self, other_id):
         """Starts a separate thread to handle incoming messages."""
-        receiving_thread = threading.Thread(target=self.receive_message, daemon=True)
+        receiving_thread = threading.Thread(target=self.receive_message, daemon=True, args=(other_id,))
         receiving_thread.start()
 
     def disconnect(self):
@@ -66,18 +74,20 @@ class Client:
         print(f"{self.user.username} disconnected from the server.")
 
 
-def send_messages(client: Client):
+def send_messages(client: Client, id):
     while client.is_active:
         text = input("Send: ")
-        client.send_message("text", 2)
+        client.send_message("text", id)
 
 
-def client_main():
+def client_main1():
     user = User('yoav', '123')
     if user.auth:
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         client = Client(user, server_socket)
         client.connect_to_server()
+
+        other_id = 2
 
         data = client.user.create_data_dict()
 
@@ -85,8 +95,27 @@ def client_main():
 
         client.server_socket.send(json_object.encode('utf-8'))
 
-        send_messages(client)
+        threading.Thread(target=send_messages, args=(client, other_id)).start()
+        client.start_receiving_thread(other_id)
+
+def client_main2():
+    user = User('yoav2', '123')
+    if user.auth:
+        server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        client = Client(user, server_socket)
+        client.connect_to_server()
+
+        other_id = 1
+
+        data = client.user.create_data_dict()
+
+        json_object = json.dumps(data, indent=4)
+
+        client.server_socket.send(json_object.encode('utf-8'))
+
+        threading.Thread(target=send_messages, args=(client, other_id)).start()
+        client.start_receiving_thread(other_id)
 
 
 if __name__ == '__main__':
-    client_main()
+    client_main1()

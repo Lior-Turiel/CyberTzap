@@ -45,8 +45,9 @@ class Client:
                     sender_id = int(sender_id)
                     chat = self.user.chats.get(sender_id)
 
-                    if chat:
+                    if True:
                         decrypted_text = chat.decrypt_message(encrypted_text.encode())
+                        print(decrypted_text)
                         self.user.receive_message(decrypted_text, sender_id)
                     else:
                         print("Chat not found for the sender.")
@@ -69,7 +70,7 @@ class Client:
 def send_messages(client: Client):
     while client.is_active:
         text = input("Send: ")
-        client.send_message("text", 2)
+        client.send_message("text", 1)
 
 
 def client_main():
@@ -85,7 +86,8 @@ def client_main():
 
         client.server_socket.send(json_object.encode('utf-8'))
 
-        send_messages(client)
+        threading.Thread(target=send_messages, args=(client,)).start()
+        client.start_receiving_thread()
 
 
 if __name__ == '__main__':

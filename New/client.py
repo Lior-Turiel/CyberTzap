@@ -32,7 +32,7 @@ class Client:
 
             chat = self.user.chats[other_user_id]
             encrypted_text = chat.cipher.encrypt(text.encode())
-            self.server_socket.sendall(f"{other_user_id}:{encrypted_text}".encode('utf-8'))
+            self.server_socket.sendall(f"{self.user.id}:{other_user_id}:{encrypted_text}".encode('utf-8'))
             print(f"Encrypted message sent from {self.user.username} to {addressee['username']}")
 
     def receive_message(self):
@@ -74,17 +74,18 @@ def send_messages(client: Client):
 
 def client_main():
     user = User('yoav', '123')
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client = Client(user, server_socket)
-    client.connect_to_server()
+    if user.auth:
+        server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        client = Client(user, server_socket)
+        client.connect_to_server()
 
-    data = client.user.create_data_dict()
+        data = client.user.create_data_dict()
 
-    json_object = json.dumps(data, indent=4)
+        json_object = json.dumps(data, indent=4)
 
-    client.server_socket.send(json_object.encode('utf-8'))
+        client.server_socket.send(json_object.encode('utf-8'))
 
-    send_messages(client)
+        send_messages(client)
 
 
 if __name__ == '__main__':

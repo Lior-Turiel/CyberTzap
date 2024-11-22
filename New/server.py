@@ -28,11 +28,12 @@ class Server:
     def handle_client(self, client_socket):
         """Manages a single client's connection, authentication, and message handling."""
         try:
-            user = self.authenticate_client(client_socket)
+            data = client_socket.recv(1024).decode('utf-8')
+            user = json.loads(data)
             if user:
                 with self.lock:
                     self.clients[client_socket] = user
-                print(f"{user.username} has logged in.")
+                print(f"{user['username']} has logged in.")
 
                 # Listen for messages from this client
                 while True:
@@ -46,28 +47,11 @@ class Server:
         finally:
             self.remove_client(client_socket)
 
-    def authenticate_client(self, client_socket):
-        """Authenticates the client, ensuring valid user credentials."""
-        # Placeholder: In a real system, receive and verify username/password from client
-        data = client_socket.recv(1024).decode('utf-8')
-        user_data = json.loads(data)  # { "username": "user1", "password": "hashed_password" }
-        users = load_data('db/users.json')
-
-        password = user_data["password_hash"]
-
-        for user_dict in users:
-
-            if user_dict["username"] == user_data["username"] and user_dict["password"] == password:
-                return User(user_dict["username"], user_dict["password"])
-        client_socket.sendall("Authentication failed.".encode('utf-8'))
-        client_socket.close()
-        return None
-
     def route_message(self, sender_id, recipient_id, encrypted_text):
         """Routes an encrypted message from sender to recipient."""
         with self.lock:
             recipient_socket = next(
-                (sock for sock, user in self.clients.items() if user.id == recipient_id), None
+                (sock for sock, user in self.clients.items() if user['id'] == recipient_id), None
             )
 
         if recipient_socket:
@@ -91,7 +75,7 @@ class Server:
         with self.lock:
             user = self.clients.pop(client_socket, None)
             if user:
-                print(f"{user.username} has disconnected.")
+                print(f"{user['username']} has disconnected.")
         client_socket.close()
 
     def stop(self):

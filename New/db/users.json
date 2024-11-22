@@ -1,8 +1,7 @@
 {
-    "yoav":
-            {
+    "yoav": {
         "username": "yoav",
-        "password": "a03ab19b866fc585b5cb1812a2f63ca861e7e7643ee5d43fd7106b623725fd67",
+        "password_hash": "a03ab19b866fc585b5cb1812a2f63ca861e7e7643ee5d43fd7106b623725fd67",
         "id": 1,
         "chats": {
             "2": {
@@ -20,6 +19,29 @@
                 ]
             }
         }
+    },
+    "yoav2": {
+        "username": "yoav2",
+        "id": 2,
+        "password_hash": "a03ab19b866fc585b5cb1812a2f63ca861e7e7643ee5d43fd7106b623725fd67",
+        "chats": {}
+    },
+    "new id": {
+        "username": "new id",
+        "id": 3,
+        "password_hash": "6b2b8a75dbb7174397301b61efaf0dd1bb58d66db84c63a4a05a32fc1c4df661",
+        "chats": {}
+    },
+    "test": {
+        "username": "test",
+        "id": 4,
+        "password_hash": "ff34740f1da8299df956c608d925b63bb9082f40e90eef26e13858db88fc978c",
+        "chats": {}
+    },
+    "yoav2": {
+        "username": "yoav2",
+        "id": null,
+        "password_hash": "a03ab19b866fc585b5cb1812a2f63ca861e7e7643ee5d43fd7106b623725fd67",
+        "chats": {}
     }
-
 }

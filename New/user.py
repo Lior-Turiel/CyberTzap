@@ -3,21 +3,33 @@ from message import Message
 from chat import Chat
 import utilities
 
-user_counter = 0
-
 
 class User:
     def __init__(self, username, password):
-        global user_counter
-        user_counter += 1
         self.username = username
         self.password_hash = hashlib.sha3_256(password.encode()).hexdigest()
-        self.id = user_counter
+        self.id = None
         self.chats = {}  # {other_user_id: Chat instance}
+        self.auth = self.register_or_login_user()
 
+    def get_latest_id(self):
+        data = utilities.load_data('db/users.json')
+        last_key = list(data)[-1]
+        last_value = data[last_key]
+        id = last_value['id']
+        return id
 
     def register_or_login_user(self):
         #TODO: actual thing then put it in the init
+        data = utilities.load_data('db/users.json')
+        if self.username not in data:
+            data[self.username] = self.create_data_dict()
+            utilities.save_data('db/users.json', data)
+            self.id = self.get_latest_id() + 1
+            return True
+        else:
+            self.id = data[self.username]['id']
+            return data[self.username]['password_hash'] == self.password_hash
 
     def create_data_dict(self):
         """Generate a dictionary representation of the user for saving/loading."""
@@ -31,7 +43,12 @@ class User:
     @staticmethod
     def get_user_by_id(users, user_id):
         """Retrieve a user by ID from a list of users."""
-        return next((user for user in users if user["id"] == user_id), None)
+        users_keys = list(users)
+        for key in users:
+            user = users[key]
+            if user['id'] == user_id:
+                return user
+        return None
 
     def start_chat(self, other_user_id):
         """Initiates a new chat with another user, if one doesn’t already exist."""

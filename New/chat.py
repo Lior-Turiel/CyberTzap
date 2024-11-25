@@ -17,7 +17,6 @@ class Chat:
     def decrypt_message(self, encrypted_text) -> str:
         """Decrypts a message using the stored Fernet key."""
         decrypted = self.cipher.decrypt(encrypted_text).decode('utf-8')
-        print(decrypted)
         return decrypted
 
     def to_dict(self):

@@ -5,6 +5,7 @@ from message import Message
 import utilities
 from cryptography.fernet import Fernet
 import json
+from chat import Chat
 
 
 class Client:
@@ -28,10 +29,10 @@ class Client:
 
         if addressee:
             if other_user_id not in self.user.chats:
-                self.user.start_chat(other_user_id)
+                self.user.start_chat(str(other_user_id))
 
-            chat = self.user.chats[other_user_id]
-            encrypted_text = chat.cipher.encrypt(text.encode())
+            chat = self.user.chats[str(other_user_id)]
+            encrypted_text = Chat().from_dict(chat).cipher.encrypt(text.encode())
             self.server_socket.sendall(f"{self.user.id}:{other_user_id}:{encrypted_text}".encode('utf-8'))
             print(f"Encrypted message sent from {self.user.username} to {addressee['username']}")
 
@@ -43,7 +44,7 @@ class Client:
                 if data:
                     sender_id, encrypted_text = data.split(':', 1)  # Placeholder format
                     sender_id = int(sender_id)
-                    chat = self.user.chats.get(sender_id)
+                    chat = Chat().from_dict(self.user.chats[str(sender_id)])
 
                     if chat:
                         decrypted_text = chat.decrypt_message(encrypted_text.encode())

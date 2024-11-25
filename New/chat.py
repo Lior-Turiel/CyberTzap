@@ -9,7 +9,7 @@ class Chat:
 
     def add_message(self, message: Message):
         """Encrypts the message text and stores it in the chat."""
-        encrypted_text = self.cipher.encrypt(message.text)
+        encrypted_text = self.cipher.encrypt(message.text.encode())
         message.text = encrypted_text  # Store the encrypted text in the Message object
         self.messages.append(message)
 
@@ -21,6 +21,7 @@ class Chat:
         """Serialize the chat, storing only necessary data (not including the key for security)."""
         return {
             "messages": [msg.to_dict() for msg in self.messages],
+            "key": self.key
             # You could consider a method to securely handle keys if needed in saved data
         }
 
@@ -28,6 +29,7 @@ class Chat:
     def from_dict(data):
         """Deserialize a chat from saved data, recreating messages (without the Fernet key)."""
         chat = Chat()
+        chat.key = data["key"]
         # TODO: Load key securely or regenerate if needed
         for msg_data in data['messages']:
             chat.messages.append(Message.from_dict(msg_data))

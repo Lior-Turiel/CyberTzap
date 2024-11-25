@@ -18,6 +18,7 @@ class User:
         self.password_hash = hashlib.sha3_256(password.encode()).hexdigest()
         self.id = None
         self.chats = {}  # {other_user_id: Chat instance}
+        self.load_chats()
         self.auth = self.register_or_login_user()
 
     def register_or_login_user(self):
@@ -37,7 +38,7 @@ class User:
             "username": self.username,
             "id": self.id,
             "password_hash": self.password_hash,
-            "chats": {user_id: chat.to_dict() for user_id, chat in self.chats.items()}
+            "chats": {user_id: chat for user_id, chat in self.chats.items()}
         }
 
     @staticmethod
@@ -52,20 +53,27 @@ class User:
 
     def start_chat(self, other_user_id):
         """Initiates a new chat with another user, if one doesn’t already exist."""
-        if other_user_id not in self.chats:
+        if str(other_user_id) not in list(self.chats.keys()):
             self.chats[other_user_id] = Chat()
             self.send_message(f"Chat started by {self.username}.", other_user_id)
             print(f"Chat started with User {other_user_id}")
+
+            db = utilities.load_data('db/users.json')
+            user = db[self.username]
+            chats = user['chats']
+            chats[other_user_id] = []
+            utilities.save_data('db/users.json', db)
         else:
             print("Chat already exists with this user.")
 
     def send_message(self, text, other_user_id):
         """Encrypt and send a message to another user."""
+        other_user_id = str(other_user_id)
         users = utilities.load_data('db/users.json')
         addressee = self.get_user_by_id(users, other_user_id)
 
         if addressee:
-            if other_user_id not in self.chats:
+            if other_user_id not in self.chats.keys():
                 self.start_chat(other_user_id)
 
             chat = self.chats[other_user_id]
@@ -77,20 +85,21 @@ class User:
 
     def receive_message(self, encrypted_text, sender_id):
         """Decrypt a received message and store it in the appropriate chat."""
-        if sender_id not in self.chats:
+        if str(sender_id) not in list(self.chats.keys()):
             self.chats[sender_id] = Chat()
 
         chat = self.chats[sender_id]
         decrypted_text = chat.decrypt_message(encrypted_text)
-        message = Message(decrypted_text, self.get_user_by_id(sender_id), self)
+        users = utilities.load_data('db/users.json')
+        message = Message(decrypted_text, self.get_user_by_id(users, sender_id), self)
         chat.add_message(message)
         print(f"Message received from User {sender_id}: {decrypted_text}")
 
     def load_chats(self):
         """Loads the user's chats from a file, initializing Chat instances."""
-        saved_data = utilities.load_data('db/chats.json')
-        user_chats = saved_data.get(str(self.id), {})
+        saved_data = utilities.load_data('db/users.json')
+        user = saved_data[self.username]
+        self.chats = user["chats"]
 
-        for other_user_id, chat_data in user_chats.items():
-            chat = Chat.from_dict(chat_data)
-            self.chats[int(other_user_id)] = chat
+        for key in self.chats.keys():
+            self.chats[str(key)] = Chat().to_dict()

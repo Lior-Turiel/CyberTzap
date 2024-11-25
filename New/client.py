@@ -6,6 +6,7 @@ import utilities
 from cryptography.fernet import Fernet
 import json
 from chat import Chat
+import base64
 
 
 class Client:
@@ -32,8 +33,13 @@ class Client:
                 self.user.start_chat(str(other_user_id))
 
             chat = self.user.chats[str(other_user_id)]
-            encrypted_text = Chat().from_dict(chat).cipher.encrypt(text.encode())
-            self.server_socket.sendall(f"{self.user.id}:{other_user_id}:{encrypted_text}".encode('utf-8'))
+            chat = Chat().from_dict(chat)
+            encrypted_text = chat.cipher.encrypt(text.encode())
+
+            # Encode encrypted_text with Base64 for safe transmission
+            encrypted_text_base64 = base64.b64encode(encrypted_text).decode('utf-8')
+
+            self.server_socket.sendall(f"{self.user.id}:{other_user_id}:{encrypted_text_base64}".encode('utf-8'))
             print(f"Encrypted message sent from {self.user.username} to {addressee['username']}")
 
     def receive_message(self, other_id):
@@ -42,19 +48,21 @@ class Client:
             try:
                 data = self.server_socket.recv(1024).decode('utf-8')
                 if data:
-                    sender_id, encrypted_text = data.split(':', 1)  # Placeholder format
+                    sender_id, encrypted_text_base64 = data.split(':', 1)  # Placeholder format
                     sender_id = int(sender_id)
-                    chat = Chat().from_dict(self.user.chats[str(sender_id)])
 
+                    # Decode the Base64-encoded encrypted text
+                    encrypted_text = base64.b64decode(encrypted_text_base64)
+
+                    chat = Chat().from_dict(self.user.chats[str(sender_id)])
                     if chat:
-                        decrypted_text = chat.decrypt_message(encrypted_text.encode())
-                        print(decrypted_text)
+                        decrypted_text = chat.decrypt_message(encrypted_text)
+                        print(f"Decrypted message from {sender_id}: {decrypted_text}")
                         self.user.receive_message(decrypted_text, sender_id)
                     else:
                         self.user.start_chat(other_id)
             except Exception as e:
                 print(f"Error receiving message: {e}")
-                break
 
     def create_new_chat(self, other_id):
         db = utilities.load_data('db/users.json')
@@ -78,7 +86,7 @@ class Client:
 def send_messages(client: Client, id):
     while client.is_active:
         text = input("Send: ")
-        client.send_message("text", id)
+        client.send_message(text, id)
 
 
 def client_main1():

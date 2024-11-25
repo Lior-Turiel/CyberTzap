@@ -1,10 +1,11 @@
 from cryptography.fernet import Fernet
 from message import Message
 
+
 class Chat:
     def __init__(self):
         self.messages = []
-        self.key = Fernet.generate_key()  # Generate a unique Fernet key for this chat
+        self.key = b't5-CyUekevdjjuIqsoyh6U5__LlEPS9D5Mp2vak51gg='  # Generate a unique Fernet key for this chat
         self.cipher = Fernet(self.key)  # Create a Fernet cipher with the generated key
 
     def add_message(self, message: Message):
@@ -13,15 +14,17 @@ class Chat:
         message.text = encrypted_text  # Store the encrypted text in the Message object
         self.messages.append(message)
 
-    def decrypt_message(self, encrypted_text: bytes) -> str:
+    def decrypt_message(self, encrypted_text) -> str:
         """Decrypts a message using the stored Fernet key."""
-        return self.cipher.decrypt(encrypted_text).decode()
+        decrypted = self.cipher.decrypt(encrypted_text).decode('utf-8')
+        print(decrypted)
+        return decrypted
 
     def to_dict(self):
         """Serialize the chat, storing only necessary data (not including the key for security)."""
         return {
             "messages": [msg.to_dict() for msg in self.messages],
-            "key": self.key
+            "key": str(self.key)
             # You could consider a method to securely handle keys if needed in saved data
         }
 
@@ -30,7 +33,6 @@ class Chat:
         """Deserialize a chat from saved data, recreating messages (without the Fernet key)."""
         chat = Chat()
         chat.key = data["key"]
-        # TODO: Load key securely or regenerate if needed
         for msg_data in data['messages']:
             chat.messages.append(Message.from_dict(msg_data))
         return chat

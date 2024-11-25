@@ -38,7 +38,7 @@ class User:
             "username": self.username,
             "id": self.id,
             "password_hash": self.password_hash,
-            "chats": {user_id: chat for user_id, chat in self.chats.items()}
+            "chats": self.chats
         }
 
     @staticmethod

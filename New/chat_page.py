@@ -4,6 +4,7 @@ import socket
 from client import Client
 import json
 import threading
+import utilities
 
 def pixels2points(pixels):
     return int(0.75 * pixels)
@@ -29,11 +30,6 @@ class ChatPage(Frame):
         self.other_id_var = StringVar(self)
         self.choose_id()
 
-    def send_messages(self, other_id):
-        while self.client.is_active:
-            text = input("Send: ")
-            self.client.send_message(text, other_id)
-
     def choose_id(self):
         Label(self, text="Enter Id To Chat With", font=("ariel", pixels2points(self.width / 30)), bg="#031E49", fg="white").pack(pady=self.height // 20)
 
@@ -48,6 +44,70 @@ class ChatPage(Frame):
         enter_button.pack()
 
     def submit(self):
-        other_id = int(self.other_id_var.get())
-        threading.Thread(target=self.send_messages, args=(other_id,)).start()
-        self.client.start_receiving_thread(other_id)
+        self.other_id = int(self.other_id_var.get())
+        for widget in self.winfo_children():
+            widget.destroy()
+        threading.Thread(target=self.send_messages, args=(self.other_id,)).start()
+        self.client.start_receiving_thread(self.other_id)
+
+    def send_messages(self, other_id):
+        users = utilities.load_data('db/users.json')
+        other_user = self.user.get_user_by_id(users, other_id)
+
+        Label(self, text=f'chat with {other_user["username"]}', bg="#031E49", fg="white",
+              font=("Arial", pixels2points(self.width / 50))).pack()
+
+        self.chat_history = Text(
+            self,
+            state="disabled",
+            wrap="word",
+            font=("Arial", 14),
+            bg="#6bf98d",
+            height=10,
+            bd=0,
+            highlightthickness=0
+        )
+        self.chat_history.pack(pady=10, padx=20, fill=X)
+
+        self.entry_canvas = Canvas(self, height=50, bg="green", highlightthickness=0)
+        self.entry_canvas.pack(pady=(10, 0), padx=20, fill=X)
+
+        self.message_entry = Entry(
+            self.entry_canvas,
+            font=("Arial", 16),
+            bg="light blue",
+            bd=0,
+            highlightthickness=0
+        )
+        self.message_entry.place(x=15, y=10, width=560, height=30)
+
+        # Rounded Send button
+        self.send_button_canvas = Canvas(self, height=50, bg="green", highlightthickness=0)
+        self.send_button_canvas.pack(pady=(10, 0), padx=20, fill=X)
+
+        self.send_button = Button(
+            self.send_button_canvas,
+            text="Send",
+            font=("Arial", 14),
+            bg="blue",
+            fg="white",
+            bd=0,
+            highlightthickness=0,
+            command=self.send_message
+        )
+        self.send_button.place(x=10, y=10, width=180, height=30)
+
+    def send_message(self):
+        """Send the typed message."""
+        text = self.message_entry.get().strip()
+        if text:
+            self.add_message(f"{self.user.username}: {text}")
+            self.message_entry.delete(0, END)
+            self.client.send_message(text, self.other_id)
+
+    def add_message(self, message):
+        """Add a new message to the chat history."""
+        self.chat_history.config(state="normal")
+        self.chat_history.insert("end", f"{message}\n")
+        self.chat_history.config(state="disabled")
+        self.chat_history.see("end")

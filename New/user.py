@@ -23,7 +23,7 @@ class User:
 
     def register_or_login_user(self):
         data = utilities.load_data('db/users.json')
-        if self.username not in data:
+        if self.username not in data.keys():
             self.id = get_latest_id() + 1
             data[self.username] = self.create_data_dict()
             utilities.save_data('db/users.json', data)
@@ -38,7 +38,7 @@ class User:
             "username": self.username,
             "id": self.id,
             "password_hash": self.password_hash,
-            "chats": self.chats
+            "chats": {key: self.chats[key].to_dict() for key in self.chats}
         }
 
     @staticmethod
@@ -59,9 +59,13 @@ class User:
             print(f"Chat started with User {other_user_id}")
 
             db = utilities.load_data('db/users.json')
+
+            other_user = User.get_user_by_id(db, int(other_user_id))
+
             user = db[self.username]
             chats = user['chats']
-            chats[other_user_id] = []
+            chats[other_user_id] = self.chats[other_user_id].to_dict()
+            db[other_user['username']]['chats'][self.id] = self.chats[other_user_id].to_dict()
             utilities.save_data('db/users.json', db)
         else:
             print("Chat already exists with this user.")
@@ -70,10 +74,11 @@ class User:
         """Encrypt and send a message to another user."""
         other_user_id = str(other_user_id)
         users = utilities.load_data('db/users.json')
-        addressee = self.get_user_by_id(users, other_user_id)
+        addressee = User.get_user_by_id(users, int(other_user_id))
+        print(addressee)
 
         if addressee:
-            if other_user_id not in self.chats.keys():
+            if str(other_user_id) not in list(self.chats.keys()):
                 self.start_chat(other_user_id)
 
             chat = self.chats[other_user_id]
@@ -81,7 +86,7 @@ class User:
             message = Message(encrypted_text, self, addressee)
             chat.add_message(message)
             print(f"Encrypted message sent to {addressee['username']}")
-            # TODO: Send the message via server
+            return encrypted_text, addressee
 
     def receive_message(self, encrypted_text, sender_id):
         """Decrypt a received message and store it in the appropriate chat."""
@@ -103,6 +108,6 @@ class User:
             self.chats = user["chats"]
 
             for key in self.chats.keys():
-                self.chats[str(key)] = Chat().to_dict()
+                self.chats[str(key)] = Chat.from_dict(self.chats[key])
         except:
             self.chats = {}

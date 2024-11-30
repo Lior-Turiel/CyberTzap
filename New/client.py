@@ -25,22 +25,11 @@ class Client:
 
     def send_message(self, text, other_user_id):
         """Encrypts and sends a message to another user via the server."""
-        users = utilities.load_data('db/users.json')
-        addressee = self.user.get_user_by_id(users, other_user_id)
+        encrypted_text, addressee = self.user.send_message(text, other_user_id)
+        encrypted_text_base64 = base64.b64encode(encrypted_text).decode('utf-8')
 
-        if addressee:
-            if other_user_id not in self.user.chats:
-                self.user.start_chat(str(other_user_id))
-
-            chat = self.user.chats[str(other_user_id)]
-            chat = Chat().from_dict(chat)
-            encrypted_text = chat.cipher.encrypt(text.encode())
-
-            # Encode encrypted_text with Base64 for safe transmission
-            encrypted_text_base64 = base64.b64encode(encrypted_text).decode('utf-8')
-
-            self.server_socket.sendall(f"{self.user.id}:{other_user_id}:{encrypted_text_base64}".encode('utf-8'))
-            print(f"Encrypted message sent from {self.user.username} to {addressee['username']}")
+        self.server_socket.sendall(f"{self.user.id}:{other_user_id}:{encrypted_text_base64}".encode('utf-8'))
+        print(f"Encrypted message sent from {self.user.username} to {addressee['username']}")
 
     def receive_message(self, other_id):
         """Receives an encrypted message from the server, decrypts, and adds it to chat."""
@@ -54,17 +43,15 @@ class Client:
                     # Decode the Base64-encoded encrypted text
                     encrypted_text = base64.b64decode(encrypted_text_base64)
 
-                    chat = Chat().from_dict(self.user.chats[str(sender_id)])
+                    chat = self.user.chats[str(sender_id)]
                     if chat:
                         decrypted_text = chat.decrypt_message(encrypted_text)
                         print(f"Decrypted message from {sender_id}: {decrypted_text}")
                         self.user.receive_message(decrypted_text, sender_id)
-                        chat.add_message(decrypted_text)
-
                     else:
                         self.user.start_chat(other_id)
-            except Exception:
-                pass
+            except Exception as e:
+                raise e
 
     def create_new_chat(self, other_id):
         db = utilities.load_data('db/users.json')

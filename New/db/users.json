@@ -4,8 +4,10 @@
         "password_hash": "a03ab19b866fc585b5cb1812a2f63ca861e7e7643ee5d43fd7106b623725fd67",
         "id": 1,
         "chats": {
-            "2": {},
-            "3": []
+            "2": {
+                "messages": [],
+                "key": "b'DBwJ5Vj-cVSbz_vPcwrkeAgnTj2-4UBfy4yoRbabtH8='"
+            }
         }
     },
     "yoav2": {
@@ -13,15 +15,16 @@
         "id": 2,
         "password_hash": "a03ab19b866fc585b5cb1812a2f63ca861e7e7643ee5d43fd7106b623725fd67",
         "chats": {
-            "1": {}
+            "1": {
+                "messages": [],
+                "key": "b'b_WlW9dRXguXJHJ_uZujiWqLHchr4UYuPOR6riJuH5U='"
+            }
         }
     },
     "yoav3": {
         "username": "yoav3",
         "id": 3,
         "password_hash": "1d6442ddcfd9db1ff81df77cbefcd5afcc8c7ca952ab3101ede17a84b866d3f3",
-        "chats": {
-            "1": []
-        }
+        "chats": {}
     }
 }

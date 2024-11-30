@@ -4,18 +4,24 @@ from message import Message
 class Chat:
     def __init__(self):
         self.messages = []
-        self.key = b'wTo9-8ndSroW1FpFZrpZh4RYDKipIeAx7RMrB_PF9dU='
+        self.key = Fernet.generate_key()
         self.cipher = Fernet(self.key)  # Create a Fernet cipher with the generated key
+
+    @staticmethod
+    def new_chat_with_key(key):
+        chat = Chat()
+        chat.key = key
+        chat.cipher = Fernet(chat.key)
+        return chat
 
     def add_message(self, message: Message):
         """Encrypts the message text and stores it in the chat."""
-        encrypted_text = self.cipher.encrypt(message.text.encode())
-        message.text = encrypted_text  # Store the encrypted text in the Message object
         self.messages.append(message)
 
     def decrypt_message(self, encrypted_text) -> str:
         """Decrypts a message using the stored Fernet key."""
         decrypted = self.cipher.decrypt(encrypted_text).decode('utf-8')
+        print(decrypted)
         return decrypted
 
     def to_dict(self):
@@ -29,8 +35,7 @@ class Chat:
     @staticmethod
     def from_dict(data):
         """Deserialize a chat from saved data, recreating messages (without the Fernet key)."""
-        chat = Chat()
-        chat.key = data["key"]
+        chat = Chat().new_chat_with_key(data['key'])
         for msg_data in data['messages']:
             chat.messages.append(Message.from_dict(msg_data))
         return chat

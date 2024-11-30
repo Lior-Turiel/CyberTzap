@@ -59,6 +59,8 @@ class Client:
                         decrypted_text = chat.decrypt_message(encrypted_text)
                         print(f"Decrypted message from {sender_id}: {decrypted_text}")
                         self.user.receive_message(decrypted_text, sender_id)
+                        chat.add_message(decrypted_text)
+
                     else:
                         self.user.start_chat(other_id)
             except Exception:

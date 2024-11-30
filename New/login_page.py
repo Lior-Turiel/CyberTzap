@@ -43,7 +43,7 @@ class LoginPage(Frame):
         enter_button.grid(row=0, column=0, padx=self.width // 25)
 
         back_button = Button(
-            buttons_frame, text="BACK", width=self.width // 100, bg="#DC143C", font=("ariel", font_size),
+            buttons_frame, text="EXIT", width=self.width // 100, bg="#DC143C", font=("ariel", font_size),
             fg="white", activebackground="#DC143C", activeforeground="white", bd=0, relief=SUNKEN, command=self.quit
         )
         back_button.grid(row=0, column=1, padx=self.width // 25)
@@ -52,7 +52,9 @@ class LoginPage(Frame):
         try:
             user = User(self.username.get(), self.password.get())
             if user.auth:
-                ChatPage(user)
+                for widget in self.winfo_children():
+                    widget.destroy()
+                ChatPage(user, self)
         except:
             self.username.set("")
             self.password.set("")

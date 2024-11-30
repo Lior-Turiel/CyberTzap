@@ -24,9 +24,9 @@ class User:
     def register_or_login_user(self):
         data = utilities.load_data('db/users.json')
         if self.username not in data:
+            self.id = get_latest_id() + 1
             data[self.username] = self.create_data_dict()
             utilities.save_data('db/users.json', data)
-            self.id = get_latest_id() + 1
             return True
         else:
             self.id = data[self.username]['id']
@@ -52,7 +52,7 @@ class User:
         return None
 
     def start_chat(self, other_user_id):
-        """Initiates a new chat with another user, if one doesn’t already exist."""
+        """Initiates a new chat with another user, if one doesn't already exist."""
         if str(other_user_id) not in list(self.chats.keys()):
             self.chats[other_user_id] = Chat()
             self.send_message(f"Chat started by {self.username}.", other_user_id)
@@ -97,9 +97,12 @@ class User:
 
     def load_chats(self):
         """Loads the user's chats from a file, initializing Chat instances."""
-        saved_data = utilities.load_data('db/users.json')
-        user = saved_data[self.username]
-        self.chats = user["chats"]
+        try:
+            saved_data = utilities.load_data('db/users.json')
+            user = saved_data[self.username]
+            self.chats = user["chats"]
 
-        for key in self.chats.keys():
-            self.chats[str(key)] = Chat().to_dict()
+            for key in self.chats.keys():
+                self.chats[str(key)] = Chat().to_dict()
+        except:
+            self.chats = {}

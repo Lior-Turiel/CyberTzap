@@ -58,7 +58,6 @@ class Client:
                     if chat:
                         decrypted_text = chat.decrypt_message(encrypted_text)
                         print(f"Decrypted message from {sender_id}: {decrypted_text}")
-                        # TODO: GUI
                         self.user.receive_message(decrypted_text, sender_id)
                     else:
                         self.user.start_chat(other_id)

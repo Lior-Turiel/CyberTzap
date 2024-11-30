@@ -5,7 +5,7 @@ from message import Message
 class Chat:
     def __init__(self):
         self.messages = []
-        self.key = b't5-CyUekevdjjuIqsoyh6U5__LlEPS9D5Mp2vak51gg='  # Generate a unique Fernet key for this chat
+        self.key = b't5-CyUekevdjjuIqsoyh6U5__LlEPS9D5Mp2vak51gg='
         self.cipher = Fernet(self.key)  # Create a Fernet cipher with the generated key
 
     def add_message(self, message: Message):

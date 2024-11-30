@@ -5,8 +5,13 @@ from message import Message
 class Chat:
     def __init__(self):
         self.messages = []
-        self.key = b't5-CyUekevdjjuIqsoyh6U5__LlEPS9D5Mp2vak51gg='
+        self.key = Fernet.generate_key()
         self.cipher = Fernet(self.key)  # Create a Fernet cipher with the generated key
+
+    def __init__(self, key):
+        self.messages = []
+        self.key = key
+        self.cipher = Fernet(self.key)
 
     def add_message(self, message: Message):
         """Encrypts the message text and stores it in the chat."""

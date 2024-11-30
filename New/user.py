@@ -54,7 +54,13 @@ class User:
     def start_chat(self, other_user_id):
         """Initiates a new chat with another user, if one doesn’t already exist."""
         if str(other_user_id) not in list(self.chats.keys()):
-            self.chats[other_user_id] = Chat()
+            new_chat = Chat()
+            self.chats[other_user_id] = new_chat
+
+            users = utilities.load_data('db/users.json')
+            addressee = self.get_user_by_id(users, other_user_id)
+            addressee.chats[self.id] = Chat(new_chat.key)  #this segment was added for the need of random keys, and encrypting them
+
             self.send_message(f"Chat started by {self.username}.", other_user_id)
             print(f"Chat started with User {other_user_id}")
 

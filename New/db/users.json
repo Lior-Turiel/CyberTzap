@@ -4,7 +4,8 @@
         "password_hash": "a03ab19b866fc585b5cb1812a2f63ca861e7e7643ee5d43fd7106b623725fd67",
         "id": 1,
         "chats": {
-            "2": {}
+            "2": {},
+            "3": []
         }
     },
     "yoav2": {

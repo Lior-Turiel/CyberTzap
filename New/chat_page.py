@@ -30,7 +30,6 @@ class ChatPage(Frame):
         self.choose_id()
 
     def send_messages(self, other_id):
-        print(self.client)
         while self.client.is_active:
             text = input("Send: ")
             self.client.send_message(text, other_id)
@@ -49,6 +48,6 @@ class ChatPage(Frame):
         enter_button.pack()
 
     def submit(self):
-        other_id = self.other_id_var.get()
+        other_id = int(self.other_id_var.get())
         threading.Thread(target=self.send_messages, args=(other_id,)).start()
         self.client.start_receiving_thread(other_id)

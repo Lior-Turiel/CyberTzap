@@ -1,13 +1,10 @@
 from cryptography.fernet import Fernet
 from message import Message
 
-key = Fernet.generate_key()
-
 class Chat:
     def __init__(self):
-        global key
         self.messages = []
-        self.key = key
+        self.key = b'wTo9-8ndSroW1FpFZrpZh4RYDKipIeAx7RMrB_PF9dU='
         self.cipher = Fernet(self.key)  # Create a Fernet cipher with the generated key
 
     def add_message(self, message: Message):

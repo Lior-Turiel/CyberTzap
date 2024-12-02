@@ -13,4 +13,4 @@ class Message:
 
     @staticmethod
     def from_dict(data):
-        return Message(data["text"], data["sender"], data["addressee"])
+        return Message(data.text, data.sender, data.addressee)

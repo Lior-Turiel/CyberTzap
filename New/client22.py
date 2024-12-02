@@ -1,3 +1,3 @@
-from client import client_main2
+from app import App
 
-client_main2()
+App()

@@ -36,6 +36,8 @@ class Client:
             chat = Chat().from_dict(chat)
             encrypted_text = chat.cipher.encrypt(text.encode())
 
+            chat.add_message(other_user_id, encrypted_text)
+
             # Encode encrypted_text with Base64 for safe transmission
             encrypted_text_base64 = base64.b64encode(encrypted_text).decode('utf-8')
 
@@ -44,6 +46,7 @@ class Client:
 
     def receive_message(self, other_id):
         """Receives an encrypted message from the server, decrypts, and adds it to chat."""
+        self.user.load_chats()
         while self.is_active:
             try:
                 data = self.server_socket.recv(1024).decode('utf-8')
@@ -54,14 +57,20 @@ class Client:
                     # Decode the Base64-encoded encrypted text
                     encrypted_text = base64.b64decode(encrypted_text_base64)
 
+                    chat.add_message(other_user_id, encrypted_text)
+
                     chat = Chat().from_dict(self.user.chats[str(sender_id)])
                     if chat:
                         decrypted_text = chat.decrypt_message(encrypted_text)
                         print(f"Decrypted message from {sender_id}: {decrypted_text}")
-                        # TODO: GUI
+                        return decrypted_text
                         self.user.receive_message(decrypted_text, sender_id)
                     else:
                         self.user.start_chat(other_id)
+                        chat = Chat().from_dict(self.user.chats[str(sender_id)])
+                        decrypted_text = chat.decrypt_message(encrypted_text)
+                        print(f"Decrypted message from {sender_id}: {decrypted_text}")
+                        return decrypted_text
             except Exception:
                 pass
 

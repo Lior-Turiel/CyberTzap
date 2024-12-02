@@ -52,7 +52,9 @@ class LoginPage(Frame):
         try:
             user = User(self.username.get(), self.password.get())
             if user.auth:
-                ChatPage(user)
+                for widget in self.winfo_children():
+                    widget.destroy()
+                ChatPage(user, self)
         except:
             self.username.set("")
             self.password.set("")

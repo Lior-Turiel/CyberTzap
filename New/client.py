@@ -57,7 +57,9 @@ class Client:
                     # Decode the Base64-encoded encrypted text
                     encrypted_text = base64.b64decode(encrypted_text_base64)
 
-                    chat.add_message(other_user_id, encrypted_text)
+                    message = Message(encrypted_text.decode(), other_id, self.user.id)
+
+                    chat.add_message(message)
 
                     chat = Chat().from_dict(self.user.chats[str(sender_id)])
                     if chat:

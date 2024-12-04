@@ -4,8 +4,19 @@
         "password_hash": "a03ab19b866fc585b5cb1812a2f63ca861e7e7643ee5d43fd7106b623725fd67",
         "id": 1,
         "chats": {
-            "2": {},
-            "3": {}
+            "2": [
+                {
+                    "text": "gAAAAABnUDy1p9y1Y6CJXOXaKd9Jh1fEVp0XhAiy251yCeX26LkxRtdOJlfTtPVOHu0QxTA8AXMLicjIFBsdBqZjjhDIvfuDtQ==",
+                    "sender": 2,
+                    "addressee": 1
+                },
+                {
+                    "text": "gAAAAABnUDzFUzNeJ8EhwCwqC1A7wL2AAysjQ_39SXKpF6S8jzCfD3lWRp2g_s4D_RIy7_lIBoF_JYFa8CVGWX7jwWOGQ_6gCw==",
+                    "sender": 1,
+                    "addressee": 2
+                }
+            ],
+            "3": []
         }
     },
     "yoav2": {
@@ -13,7 +24,18 @@
         "id": 2,
         "password_hash": "a03ab19b866fc585b5cb1812a2f63ca861e7e7643ee5d43fd7106b623725fd67",
         "chats": {
-            "1": {}
+            "1": [
+                {
+                    "text": "gAAAAABnUDy1p9y1Y6CJXOXaKd9Jh1fEVp0XhAiy251yCeX26LkxRtdOJlfTtPVOHu0QxTA8AXMLicjIFBsdBqZjjhDIvfuDtQ==",
+                    "sender": 2,
+                    "addressee": 1
+                },
+                {
+                    "text": "gAAAAABnUDzFUzNeJ8EhwCwqC1A7wL2AAysjQ_39SXKpF6S8jzCfD3lWRp2g_s4D_RIy7_lIBoF_JYFa8CVGWX7jwWOGQ_6gCw==",
+                    "sender": 1,
+                    "addressee": 2
+                }
+            ]
         }
     },
     "ido": {
@@ -21,7 +43,7 @@
         "id": 3,
         "password_hash": "a03ab19b866fc585b5cb1812a2f63ca861e7e7643ee5d43fd7106b623725fd67",
         "chats": {
-            "1": {}
+            "1": []
         }
     }
 }

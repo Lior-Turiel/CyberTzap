@@ -71,7 +71,7 @@ class User:
             db = utilities.load_data('db/users.json')
             user = db[self.username]
             chats = user['chats']
-            chats[other_user_id] = []
+            chats[other_user_id] = list()
             utilities.save_data('db/users.json', db)
         else:
             print("Chat already exists with this user.")

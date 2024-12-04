@@ -1,6 +1,6 @@
 from cryptography.fernet import Fernet
 from message import Message
-
+import utilities
 
 class Chat:
     def __init__(self):
@@ -8,9 +8,18 @@ class Chat:
         self.key = b'-YqZx5qUt95Z8SJ0isavH_-lE9b6lwTmu_rKEJagiiY='
         self.cipher = Fernet(self.key)  # Create a Fernet cipher with the generated key
 
-    def add_message(self, message: Message):
+    def add_message(self, message: Message, client, types):
         """Encrypts the message text and stores it in the chat."""
         self.messages.append(message)
+
+        db = utilities.load_data('db/users.json')
+        if types == 'send':
+            db[client.user.username]['chats'][str(message.addressee)].append(message.to_dict())
+        elif types == 'receive':
+            db[client.user.username]['chats'][str(message.sender)].append(message.to_dict())
+        else:
+            return
+        utilities.save_data('db/users.json', db)
 
     def decrypt_message(self, encrypted_text) -> str:
         """Decrypts a message using the stored Fernet key."""

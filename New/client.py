@@ -36,7 +36,9 @@ class Client:
             chat = Chat().from_dict(chat)
             encrypted_text = chat.cipher.encrypt(text.encode())
 
-            chat.add_message(other_user_id, encrypted_text)
+            message = Message(encrypted_text.decode(), self.user.id, other_user_id)
+
+            chat.add_message(message, self, 'send')
 
             # Encode encrypted_text with Base64 for safe transmission
             encrypted_text_base64 = base64.b64encode(encrypted_text).decode('utf-8')
@@ -59,22 +61,20 @@ class Client:
 
                     message = Message(encrypted_text.decode(), other_id, self.user.id)
 
-                    chat.add_message(message)
-
                     chat = Chat().from_dict(self.user.chats[str(sender_id)])
+                    chat.add_message(message, self, 'receive')
                     if chat:
                         decrypted_text = chat.decrypt_message(encrypted_text)
                         print(f"Decrypted message from {sender_id}: {decrypted_text}")
                         return decrypted_text
-                        self.user.receive_message(decrypted_text, sender_id)
                     else:
                         self.user.start_chat(other_id)
                         chat = Chat().from_dict(self.user.chats[str(sender_id)])
                         decrypted_text = chat.decrypt_message(encrypted_text)
                         print(f"Decrypted message from {sender_id}: {decrypted_text}")
                         return decrypted_text
-            except Exception:
-                pass
+            except Exception as e:
+                raise e
 
     def create_new_chat(self, other_id):
         db = utilities.load_data('db/users.json')
@@ -118,6 +118,7 @@ def client_main1():
 
         threading.Thread(target=send_messages, args=(client, other_id)).start()
         client.start_receiving_thread(other_id)
+
 
 def client_main2():
     user = User('yoav2', '123')

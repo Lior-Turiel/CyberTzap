@@ -74,7 +74,7 @@ class Client:
                         print(f"Decrypted message from {sender_id}: {decrypted_text}")
                         return decrypted_text
             except Exception as e:
-                raise e
+                print(e)
 
     def create_new_chat(self, other_id):
         db = utilities.load_data('db/users.json')

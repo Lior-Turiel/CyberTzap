@@ -24,7 +24,7 @@ class User:
     def register_or_login_user(self):
         data = utilities.load_data('db/users.json')
         if self.username not in data:
-            self.id = get_latest_id() + 1
+            self.id = get_latest_id() + 2
             data[self.username] = self.create_data_dict()
 
             utilities.save_data('db/users.json', data)
@@ -45,7 +45,6 @@ class User:
     @staticmethod
     def get_user_by_id(users, user_id):
         """Retrieve a user by ID from a list of users."""
-
         users = utilities.load_data('db/users.json')
         users_keys = list(users)
         for key in users_keys:
@@ -71,7 +70,7 @@ class User:
             db = utilities.load_data('db/users.json')
             user = db[self.username]
             chats = user['chats']
-            chats[other_user_id] = list()
+            chats[other_user_id] = []
             utilities.save_data('db/users.json', db)
         else:
             print("Chat already exists with this user.")

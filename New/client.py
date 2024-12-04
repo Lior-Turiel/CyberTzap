@@ -3,7 +3,6 @@ import threading
 from user import User
 from message import Message
 import utilities
-from cryptography.fernet import Fernet
 import json
 from chat import Chat
 import base64
@@ -95,49 +94,7 @@ class Client:
         print(f"{self.user.username} disconnected from the server.")
 
 
-def send_messages(client: Client, id):
+def send_messages(client: Client, user_id):
     while client.is_active:
         text = input("Send: ")
-        client.send_message(text, id)
-
-
-def client_main1():
-    user = User('yoav', '123')
-    if user.auth:
-        server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        client = Client(user, server_socket)
-        client.connect_to_server()
-
-        other_id = 2
-
-        data = client.user.create_data_dict()
-
-        json_object = json.dumps(data, indent=4)
-
-        client.server_socket.send(json_object.encode('utf-8'))
-
-        threading.Thread(target=send_messages, args=(client, other_id)).start()
-        client.start_receiving_thread(other_id)
-
-
-def client_main2():
-    user = User('yoav2', '123')
-    if user.auth:
-        server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        client = Client(user, server_socket)
-        client.connect_to_server()
-
-        other_id = 1
-
-        data = client.user.create_data_dict()
-
-        json_object = json.dumps(data, indent=4)
-
-        client.server_socket.send(json_object.encode('utf-8'))
-
-        threading.Thread(target=send_messages, args=(client, other_id)).start()
-        client.start_receiving_thread(other_id)
-
-
-if __name__ == '__main__':
-    client_main1()
+        client.send_message(text, user_id)

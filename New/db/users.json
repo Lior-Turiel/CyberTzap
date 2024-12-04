@@ -6,17 +6,21 @@
         "chats": {
             "2": [
                 {
-                    "text": "gAAAAABnUDy1p9y1Y6CJXOXaKd9Jh1fEVp0XhAiy251yCeX26LkxRtdOJlfTtPVOHu0QxTA8AXMLicjIFBsdBqZjjhDIvfuDtQ==",
+                    "text": "gAAAAABnUFpQtSgDwrOA5GaUeP6lT6QBnkyt5FDZ2ebInVwBxupCbNKlVVltbRH8zBV8POA2Nc4NqX_dU8bZENLdsJIgtk4K9A==",
+                    "sender": 1,
+                    "addressee": 2
+                },
+                {
+                    "text": "gAAAAABnUFpVdlHQDbHOau54OY60XG3tuDvG0F3vBpMLj2NZiSBAC2ikTV6ffj1nBDYF7SQXKFf0PS2A5oi8vR50iO16WAFb6Q==",
                     "sender": 2,
                     "addressee": 1
                 },
                 {
-                    "text": "gAAAAABnUDzFUzNeJ8EhwCwqC1A7wL2AAysjQ_39SXKpF6S8jzCfD3lWRp2g_s4D_RIy7_lIBoF_JYFa8CVGWX7jwWOGQ_6gCw==",
-                    "sender": 1,
-                    "addressee": 2
+                    "text": "gAAAAABnUF86gzi63ooZZXtXjIT1OBTI0yUd1kswDTFO_500RqWduDNZvY8bchlyzFU2k_3aCkmcK_1X9kXZUCMkanC6rRQmDA==",
+                    "sender": 2,
+                    "addressee": 1
                 }
-            ],
-            "3": []
+            ]
         }
     },
     "yoav2": {
@@ -26,12 +30,17 @@
         "chats": {
             "1": [
                 {
-                    "text": "gAAAAABnUDy1p9y1Y6CJXOXaKd9Jh1fEVp0XhAiy251yCeX26LkxRtdOJlfTtPVOHu0QxTA8AXMLicjIFBsdBqZjjhDIvfuDtQ==",
+                    "text": "gAAAAABnUFpQtSgDwrOA5GaUeP6lT6QBnkyt5FDZ2ebInVwBxupCbNKlVVltbRH8zBV8POA2Nc4NqX_dU8bZENLdsJIgtk4K9A==",
+                    "sender": 1,
+                    "addressee": 2
+                },
+                {
+                    "text": "gAAAAABnUFpVdlHQDbHOau54OY60XG3tuDvG0F3vBpMLj2NZiSBAC2ikTV6ffj1nBDYF7SQXKFf0PS2A5oi8vR50iO16WAFb6Q==",
                     "sender": 2,
                     "addressee": 1
                 },
                 {
-                    "text": "gAAAAABnUDzFUzNeJ8EhwCwqC1A7wL2AAysjQ_39SXKpF6S8jzCfD3lWRp2g_s4D_RIy7_lIBoF_JYFa8CVGWX7jwWOGQ_6gCw==",
+                    "text": "gAAAAABnUF9FMoeki2B28Bv7RztQqWb2jTuU7P5UJwzKY3usu8Uoaz8tM3XDw-t-m0LXHu4ZkLd_BxX8MpeIyFSuwdlA5qUW-PjgYCXX0nM9TxJNvVAdd5E=",
                     "sender": 1,
                     "addressee": 2
                 }

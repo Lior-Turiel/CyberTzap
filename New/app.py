@@ -1,5 +1,4 @@
 from tkinter import *
-from client import Client
 from login_page import LoginPage
 
 class App:
@@ -14,7 +13,7 @@ class App:
         self.root.geometry(f'{str(self.width)}x{str(self.height)}')
         self.root.resizable(False, False)
 
-        login = LoginPage(self.root, self.client)
+        LoginPage(self.root, self.client)
 
         self.root.mainloop()
 

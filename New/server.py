@@ -1,9 +1,6 @@
 import socket
 import threading
 import json
-from utilities import save_data, load_data
-from user import User
-from message import Message
 
 
 class Server:
@@ -61,7 +58,8 @@ class Server:
         else:
             print(f"User {recipient_id} not connected. Message could not be delivered.")
 
-    def parse_message(self, data):
+    @staticmethod
+    def parse_message(data):
         """Parses incoming data and extracts sender, recipient, and encrypted text."""
         # Expected data format: "sender_id:recipient_id:encrypted_text"
         parts = data.split(":", 2)

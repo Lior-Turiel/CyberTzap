@@ -5,6 +5,8 @@ from client import Client
 import json
 import threading
 import utilities
+from message import Message
+from chat import Chat
 
 def pixels2points(pixels):
     return int(0.75 * pixels)
@@ -12,6 +14,14 @@ def pixels2points(pixels):
 class ChatPage(Frame):
     def __init__(self, user: User, root):
         super().__init__(root, bg="#031E49")
+
+        self.other_id = None
+        self.chat_history = None
+        self.entry_canvas = None
+        self.message_entry = None
+        self.send_button = None
+        self.send_button_canvas = None
+
         self.pack(fill="both", expand=True)
         self.width = 960
         self.height = 540
@@ -53,7 +63,7 @@ class ChatPage(Frame):
 
         keys = chats.keys()
         if str(self.other_id) not in keys:
-            chats[str(self.other_id)] = {}
+            chats[str(self.other_id)] = []
             utilities.save_data('db/users.json', db)
 
         for widget in self.winfo_children():
@@ -74,7 +84,7 @@ class ChatPage(Frame):
             wrap="word",
             font=("Arial", 14),
             bg="#6bf98d",
-            height=10,
+            height=18,
             bd=0,
             highlightthickness=0
         )
@@ -92,12 +102,8 @@ class ChatPage(Frame):
         )
         self.message_entry.place(x=15, y=10, width=560, height=30)
 
-        # Rounded Send button
-        self.send_button_canvas = Canvas(self, height=50, bg="green", highlightthickness=0)
-        self.send_button_canvas.pack(pady=(10, 0), padx=20, fill=X)
-
         self.send_button = Button(
-            self.send_button_canvas,
+            self.entry_canvas,
             text="Send",
             font=("Arial", 14),
             bg="blue",
@@ -106,7 +112,19 @@ class ChatPage(Frame):
             highlightthickness=0,
             command=self.send_message
         )
-        self.send_button.place(x=10, y=10, width=180, height=30)
+        self.send_button.place(x=600, y=10, width=180, height=30)
+
+        self.load_chat(str(other_id))
+
+    def load_chat(self, other_id: str):
+        db = utilities.load_data('db/users.json')
+        chat = db[self.client.user.username]['chats'][other_id]
+        for message in chat:
+            encrypted_text, sender, adressee = list(message.values())
+            decrypted_text = Chat().decrypt_message(encrypted_text)
+            user = self.user.get_user_by_id(utilities.load_data('db/users.json'), sender)
+            text = user['username'] + ': ' + decrypted_text
+            self.add_message(text)
 
     def send_message(self):
         """Send the typed message."""

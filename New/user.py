@@ -24,7 +24,7 @@ class User:
     def register_or_login_user(self):
         data = utilities.load_data('db/users.json')
         if self.username not in data:
-            self.id = get_latest_id() + 2
+            self.id = get_latest_id() + 1
             data[self.username] = self.create_data_dict()
 
             utilities.save_data('db/users.json', data)
